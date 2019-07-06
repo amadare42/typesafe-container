@@ -1,0 +1,20 @@
+{
+  "name": "ts-factory-container",
+  "version": "0.0.1",
+  "description": "Small object factory & container with compile-time type checking and lifetime management for TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "amadare42",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^24.0.15",
+    "@types/node": "^12.0.12",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "type-tester": "^1.0.0",
+    "typescript": "^3.5.2"
+  }
+}
