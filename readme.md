@@ -50,7 +50,7 @@ That also means, there is no clear indication that some dependencies were broken
 
 How to use it?
 --------------
-You can find step-by-step examples below, but feel free to jump straight to (API reference)[./docs/reference.md].
+You can find step-by-step examples below, but feel free to jump straight to [API reference](./docs/reference.md).
 
 ### 01. Simple example
 
@@ -70,9 +70,9 @@ logger.log(container.currentTime()); // will output T+1 second
 ```
 * container works like service locator that will abstract away details of object creation
 * `ContainerBuilder` will provide interface to create container typed container that contains dependencies that are included in modules. In our example it means that `container` will have `currentTime` as method that returns `string`.
-* `ContainerBuilder.register()` function is registering new module to container. It accept registration function as argument, which returns object, every field of which is registered dependency. We added `currentTime` as one. For full API description, check (API reference)[./docs/reference.md].
+* `ContainerBuilder.register()` function is registering new module to container. It accept registration function as argument, which returns object, every field of which is registered dependency. We added `currentTime` as one. For full API description, check [API reference](./docs/reference.md).
 * `register.transient` means that we're registering dependency in transient scope. This means that specified factory method will be called every time this object is requested.
-* `register.singleton` means that specified factory method will be called first time and will be pulled from cache for other calls. For list of all lifetime scopes, check (API reference)[./docs/reference.md].
+* `register.singleton` means that specified factory method will be called first time and will be pulled from cache for other calls. For list of all lifetime scopes, check [API reference](./docs/reference.md).
 
 ### 02. Dependency injection & Modules
 Let's introduce `currentDate` dependency that will add formatting for our date:
@@ -278,6 +278,10 @@ new ContainerBuilder({ decorateRegistrar: addLogging })
     //...
 ```
 By using this simple trick, you will get log entries on every module registration and every module registration and every dependency resolving.
+
+Contributing
+------------
+Issues & PRs are welcome! But please mind code style & tests.
 
 License
 -------
