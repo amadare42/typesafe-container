@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "indent": {
+      "options": ["spaces", 4]
+    },
+    "quotemark": {
+      "options": "single"
+    }
+  }
+}

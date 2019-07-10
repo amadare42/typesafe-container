@@ -33,3 +33,12 @@ let a = new ContainerBuilder()
     .a();
 // duck typing type of a: expected string will never extend an 1
 let test: typeof a extends 1 ? 'any' : 'string' = 'any'; //@expected 2322
+
+// [TEST CASE] error on missing module moniker
+class ModuleAB2 extends BaseModule<{ moduleA: ModuleA }> {
+    ab = this.register.transient((ctx) => ctx.moduleA.a() + 'b')
+}
+new ContainerBuilder()
+    .register(r => new ModuleA(r))
+    .register(r => new ModuleAB2(r)) //@expected 2345
+    .getContainer()

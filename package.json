@@ -1,19 +1,30 @@
 {
-  "name": "ts-factory-container",
+  "name": "typesafe-container",
   "version": "0.0.1",
   "description": "Small object factory & container with compile-time type checking and lifetime management for TypeScript",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "tslint --project ./"
   },
   "author": "amadare42",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {},
   "devDependencies": {
+    "@types/gulp": "^4.0.6",
+    "@types/gulp-gzip": "0.0.31",
     "@types/jest": "^24.0.15",
     "@types/node": "^12.0.12",
+    "gulp": "^4.0.2",
+    "gulp-ejs": "^4.1.1",
+    "gulp-gzip": "^1.4.2",
+    "gulp-rename": "^1.4.0",
+    "gulp-typescript": "^5.0.1",
+    "gulp-uglify-es": "^1.0.4",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
     "type-tester": "^1.0.0",
     "typescript": "^3.5.2"
   }
