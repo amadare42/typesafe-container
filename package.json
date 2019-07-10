@@ -2,13 +2,24 @@
   "name": "typesafe-container",
   "version": "0.0.1",
   "description": "Small object factory & container with compile-time type checking and lifetime management for TypeScript",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amadare42/typesafe-container"
+  },
+  "keywords": [
+    "di", "container", "factory", "typescript", "dependency-injection", "ioc"
+  ],
   "main": "index.ts",
   "scripts": {
     "test": "jest",
+    "build": "gulp build",
     "lint": "tslint --project ./"
   },
   "author": "amadare42",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/amadare42/typesafe-container/issues"
+  },
   "dependencies": {},
   "devDependencies": {
     "@types/gulp": "^4.0.6",
