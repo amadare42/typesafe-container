@@ -1,6 +1,6 @@
-import { BaseModule, ContainerBuilder } from '../../index';
+import { BaseModule, ContainerBuilder } from '../../src';
 
-// START
+//START
 class EnvironmentModule extends BaseModule {
     currentTime = this.register.transient(() => new Date().toUTCString());
 }

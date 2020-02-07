@@ -6,7 +6,7 @@
 
 What is it?
 -----------
-`typesafe-container` is small (1.92kb min, 0.77kb min+gzip) library for managing object creation with lifetime management for TypeScript. It relays on TypeScript's implicit type inferring in order to provide full edit-time resolution of dependency graph.
+`typesafe-container` is small (5.13kb min, 0.79kb min+gzip) library for managing object creation with lifetime management for TypeScript. It relays on TypeScript's implicit type inferring in order to provide full edit-time resolution of dependency graph.
 
 Features
 --------
@@ -93,6 +93,15 @@ console.log(container.timeString());
 * `register.transient` factory method can receive `container` as argument. It can use it to resolve dependencies that are already registered in container. In our case `timeString` will resolve `currentTime` and add formatting for it.
 > NOTE: while you _can_ use `this` to resolve dependencies from current module, I'll recommend using `container` as it will contain typed dependencies from current AND other modules.
 
+You can also use shorthand syntax like this:
+```typescript
+const container = new ContainerBuilder()
+    .module(DateModule)
+    .getContainer();
+
+//...
+```
+
 ### 03. Module Dependencies
 ```typescript
 class EnvironmentModule extends BaseModule {
@@ -123,9 +132,6 @@ const wontCompile = new ContainerBuilder()
 We can also add monikers (alternative keys for modules), so whole module can be available by that name *in addition* to global container scope.
 
 ```typescript
-{ BaseModule, ContainerBuilder } from '../../index';
-
-// START
 class EnvironmentModule extends BaseModule {
     currentTime = this.register.transient(() => new Date().toUTCString());
 }

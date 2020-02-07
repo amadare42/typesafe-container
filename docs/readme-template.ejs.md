@@ -72,6 +72,11 @@ Let's introduce `currentDate` dependency that will add formatting for our date:
 * `register.transient` factory method can receive `container` as argument. It can use it to resolve dependencies that are already registered in container. In our case `timeString` will resolve `currentTime` and add formatting for it.
 > NOTE: while you _can_ use `this` to resolve dependencies from current module, I'll recommend using `container` as it will contain typed dependencies from current AND other modules.
 
+You can also use shorthand syntax like this:
+```typescript
+<%- example("02_1") %>
+```
+
 ### 03. Module Dependencies
 ```typescript
 <%- example("03") %>

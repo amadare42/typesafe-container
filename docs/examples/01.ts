@@ -1,4 +1,4 @@
-import { ContainerBuilder } from '../../index';
+import { ContainerBuilder } from '../../src';
 
 //START
 const container = new ContainerBuilder()

@@ -1,4 +1,4 @@
-import { BaseModule, ContainerBuilder } from '../../index';
+import { BaseModule, ContainerBuilder } from '../../src';
 
 //START
 class EnvironmentModule extends BaseModule {

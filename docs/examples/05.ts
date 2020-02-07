@@ -1,4 +1,4 @@
-import { BaseModule, ContainerBuilder, ContainerScope } from '../../index';
+import { BaseModule, ContainerBuilder, ContainerScope } from '../../src';
 
 //START
 class TimeFreezeScope implements ContainerScope {

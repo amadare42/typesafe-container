@@ -1,4 +1,4 @@
-import { BaseModule, ContainerBuilder } from '../index';
+import { BaseModule, ContainerBuilder } from '../src';
 
 describe('ContainerBuilder', () => {
     it('should build basic functioning container', () => {
@@ -94,4 +94,26 @@ describe('module monikers', () => {
         expect(container.ab()).toBe('ab');
 
     });
+
+    it('should work with module classes', () => {
+        const container = new ContainerBuilder()
+            .module(ModuleA)
+            .register(r => ({
+                b: r.singleton(ctr => ctr.a() + 'b')
+            }))
+            .getContainer();
+
+        expect(container.b()).toBe('ab');
+    });
+    
+    it('should work with module classes with monikers', () => {
+        const container = new ContainerBuilder()
+            .module(ModuleA, ['moduleA'])
+            .register(r => ({
+                b: r.singleton(ctr => ctr.moduleA.a() + 'b')
+            }))
+            .getContainer();
+
+        expect(container.b()).toBe('ab');
+    })
 });

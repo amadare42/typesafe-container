@@ -103,6 +103,20 @@ export class ContainerBuilder<TContainerData extends {}> {
         this.decorateModule = config.decorateModule as any;
         this.registrar = this.createRegistrar(container, config);
     }
+    
+    /** register module as class */
+    module<TModule extends BaseModule<TRequired>, TRequired = TContainerData>
+        (ctor: { new(register: ModuleRegistrar<TRequired>): TModule } )
+        : ContainerBuilder<TContainerData & Omit<TModule, 'register'>>;
+
+    /** register module as class with monikers*/
+    module<TModule extends BaseModule<TRequired>, TMoniker extends Moniker, TRequired = TContainerData>
+        (ctor: { new(register: ModuleRegistrar<TRequired>): TModule },  monikers: TMoniker[])
+        : ContainerBuilder<TContainerData & Omit<TModule, 'register'> & { [key in TMoniker]: Omit<TModule, 'register'>}>;
+
+    module(ctor: any, monikers?: string[]) {
+        return this.register<any, any>(r => new ctor(r), monikers);
+    }
 
     /** register module */
     register<TModule, TRequired = TContainerData>

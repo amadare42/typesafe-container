@@ -8,14 +8,14 @@ import * as rename from 'gulp-rename';
 
 import * as fs from 'fs';
 
-let tsProject = (declaration: boolean = false) => ts.createProject('tsconfig.json', { typescript, declaration,  })();
+let tsProject = (declaration: boolean = false) => ts.createProject('tsconfig.json', { typescript, declaration })();
 
-gulp.task('build-types', () => gulp.src('./index.ts')
+gulp.task('build-types', () => gulp.src('./src/index.ts')
     .pipe(tsProject(true))
-    .pipe(gulp.dest('./dist', { overwrite: false }))
+    .pipe(gulp.dest('./dist' ))
 );
 
-gulp.task('build-app', () => gulp.src('./index.ts')
+gulp.task('build-app', () => gulp.src('./src/index.ts')
     .pipe(tsProject())
     .pipe(uglify())
     .pipe(gulp.dest('./dist'))

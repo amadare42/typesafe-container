@@ -1,4 +1,4 @@
-import { ContainerBuilder, ContainerScope } from '../index';
+import { ContainerBuilder, ContainerScope } from '../src';
 
 describe('custom scopes', () => {
     it('should create new values only when scope updated', () => {
