@@ -6,7 +6,7 @@
 
 What is it?
 -----------
-`typesafe-container` is small (1.60kb min, 0.77kb min+gzip) library for managing object creation with lifetime management for TypeScript. It relays on TypeScript's implicit type inferring in order to provide full edit-time resolution of dependency graph.
+`typesafe-container` is small (1.92kb min, 0.77kb min+gzip) library for managing object creation with lifetime management for TypeScript. It relays on TypeScript's implicit type inferring in order to provide full edit-time resolution of dependency graph.
 
 Features
 --------

@@ -8,17 +8,25 @@ import * as rename from 'gulp-rename';
 
 import * as fs from 'fs';
 
-let tsProject = ts.createProject('tsconfig.json', { typescript });
+let tsProject = (declaration: boolean = false) => ts.createProject('tsconfig.json', { typescript, declaration,  })();
 
+gulp.task('build-types', () => gulp.src('./index.ts')
+    .pipe(tsProject(true))
+    .pipe(gulp.dest('./dist', { overwrite: false }))
+);
 
-gulp.task('build app', () => gulp.src('./index.ts')
+gulp.task('build-app', () => gulp.src('./index.ts')
     .pipe(tsProject())
     .pipe(uglify())
+    .pipe(gulp.dest('./dist'))
+);
+
+gulp.task('gzip-app', () => gulp.src('./dist/index.js')
     .pipe(gzip())
     .pipe(gulp.dest('./dist'))
 );
 
-gulp.task('build docs', () => gulp.src('./docs/readme-template.ejs.md')
+gulp.task('build-docs', () => gulp.src('./docs/readme-template.ejs.md')
     .pipe<NodeJS.ReadWriteStream>(ejs({
         sizes: {
             min: () => (fs.statSync('./dist/index.js').size / 1000).toFixed(2),
@@ -34,4 +42,4 @@ gulp.task('build docs', () => gulp.src('./docs/readme-template.ejs.md')
     .pipe(gulp.dest('./'))
 );
 
-gulp.task('build', gulp.series('build app', 'build docs'));
+gulp.task('build', gulp.series('build-app', 'gzip-app', 'build-types', 'build-docs'));
