@@ -42,4 +42,4 @@ gulp.task('build-docs', () => gulp.src('./docs/readme-template.ejs.md')
     .pipe(gulp.dest('./'))
 );
 
-gulp.task('build', gulp.series('build-app', 'gzip-app', 'build-types', 'build-docs'));
+gulp.task('build', gulp.series('build-app', 'gzip-app', 'build-docs', 'build-types'));

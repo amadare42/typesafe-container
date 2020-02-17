@@ -10,7 +10,7 @@ class TimeFreezeScope implements ContainerScope {
 class TimeModule extends BaseModule {
     timeFreezeScope = this.register.singleton(() => new TimeFreezeScope());
     realDate = this.register.transient(() => new Date().toUTCString());
-    currentDate = this.register.inScopeOf(ctr => ctr.timeFreezeScope(), ctr => ctr.realDate());
+    currentDate = this.register.inScopeOf(ctr => ctr.timeFreezeScope(), ctr => ctr.realDate(), this);
 }
 const container = new ContainerBuilder()
     .register(r => new TimeModule(r))

@@ -3,7 +3,7 @@ import { BaseModule, ContainerBuilder } from '../../src';
 //START
 class DateModule extends BaseModule {
     currentTime = this.register.transient(() => new Date().toUTCString());
-    timeString = this.register.transient(ctr => `Current date: ${ctr.currentTime()}`)
+    timeString = this.register.transient(ctr => `Current date: ${ctr.currentTime()}`, this)
 }
 
 const container = new ContainerBuilder()

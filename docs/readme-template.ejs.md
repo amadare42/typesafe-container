@@ -4,9 +4,11 @@
 
 -----------
 
+[npm](https://www.npmjs.com/package/typesafe-container)
+
 What is it?
 -----------
-`typesafe-container` is small (<%- sizes.min() %>kb min, <%- sizes.gzip() %>kb min+gzip) library for managing object creation with lifetime management for TypeScript. It relays on TypeScript's implicit type inferring in order to provide full edit-time resolution of dependency graph.
+ `typesafe-container`  is small (<%- sizes.min() %>kb min, <%- sizes.gzip() %>kb min+gzip) library for managing object creation with lifetime management for TypeScript. It relays on TypeScript's implicit type inferring in order to provide full edit-time resolution of dependency graph.
 
 Features
 --------
@@ -117,6 +119,19 @@ class ModuleA extends BaseModule {}
 class ModuleB extends BaseModule {}
 class ModuleC extends BaseModule<ModuleA & ModuleC> {}
 ```
+
+### Dependency on own module: why `this`?
+TypeScript compiler refuses to infer the type of an object literal if the inferred type references itself. So in order to reference current module, you have to help it to infer properly. Functions will require explicit `this` as last parameter.
+
+```typescript
+class MyModule extends BaseModule {
+    foo = this.register.singleton(() => 42);
+    // 'this' argument is required to use `foo` there
+    bar = this.register.singleton(ctr => ctr.foo(), this);
+}
+```
+This argument will not be actually used in code. It's there just for compiler.
+You could also just use `this` instead of `ctr` in that case, but I'll recommend strongly against it. You will have to edit a lot more wiring code after moving dependencies.
 
 ### Preventing names collision
 Since we have single namespace, you can stumble upon naming collision problem if you have a lot of services. There are some ways to tackle this problem:

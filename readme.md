@@ -6,7 +6,7 @@
 
 What is it?
 -----------
-`typesafe-container` is small (5.13kb min, 0.79kb min+gzip) library for managing object creation with lifetime management for TypeScript. It relays on TypeScript's implicit type inferring in order to provide full edit-time resolution of dependency graph.
+`typesafe-container` is small (1.96kb min, 0.79kb min+gzip) library for managing object creation with lifetime management for TypeScript. It relays on TypeScript's implicit type inferring in order to provide full edit-time resolution of dependency graph.
 
 Features
 --------
@@ -79,7 +79,7 @@ Let's introduce `currentDate` dependency that will add formatting for our date:
 ```typescript
 class DateModule extends BaseModule {
     currentTime = this.register.transient(() => new Date().toUTCString());
-    timeString = this.register.transient(ctr => `Current date: ${ctr.currentTime()}`)
+    timeString = this.register.transient(ctr => `Current date: ${ctr.currentTime()}`, this)
 }
 
 const container = new ContainerBuilder()
@@ -168,7 +168,7 @@ class TimeFreezeScope implements ContainerScope {
 class TimeModule extends BaseModule {
     timeFreezeScope = this.register.singleton(() => new TimeFreezeScope());
     realDate = this.register.transient(() => new Date().toUTCString());
-    currentDate = this.register.inScopeOf(ctr => ctr.timeFreezeScope(), ctr => ctr.realDate());
+    currentDate = this.register.inScopeOf(ctr => ctr.timeFreezeScope(), ctr => ctr.realDate(), this);
 }
 const container = new ContainerBuilder()
     .register(r => new TimeModule(r))

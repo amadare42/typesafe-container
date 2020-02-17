@@ -10,7 +10,7 @@ class ModuleB extends BaseModule<ModuleA> {
 
 class ModuleAB extends BaseModule<ModuleA & ModuleB> {
     c = this.register.transient(() => 'c');
-    abc = this.register.transient(ctx => ctx.ab() + ctx.c());
+    abc = this.register.transient(ctx => ctx.ab() + ctx.c(), this);
 }
 
 // [TEST CASE] this should fail since ModuleB wasn't registered
@@ -41,4 +41,4 @@ class ModuleAB2 extends BaseModule<{ moduleA: ModuleA }> {
 new ContainerBuilder()
     .register(r => new ModuleA(r))
     .register(r => new ModuleAB2(r)) //@expected 2345
-    .getContainer()
+    .getContainer();
