@@ -1,6 +1,26 @@
+type Ctr<TContainer> = Omit<TContainer, 'register'>;
+
 export interface ObjectRegistrationFunc<TContainer> {
     <T>(factory: (ctx: TContainer) => T): () => T;
+
     <T, TArg>(factory: (ctx: TContainer, arg: TArg) => T): (arg: TArg) => T;
+
+    <T, This>(factory: (ctx: Ctr<TContainer & This>) => T, _this: This): () => T;
+
+    <T, TArg, This>(factory: (ctx: Ctr<TContainer & This>, arg: TArg, _this: This) => T): (arg: TArg) => T;
+}
+
+export interface ObjectRegistrationFuncAsync<TContainer> {
+    <TObj, T, This>(
+        waitFor: ((ctr: Ctr<TContainer>) => Promise<TObj>),
+        factory: (ctr: Ctr<TContainer>, obj: TObj) => T
+    ): () => Promise<T>;
+
+    <TObj, T, This>(
+        waitFor: ((ctr: Ctr<TContainer & This>) => Promise<TObj>),
+        factory: (ctr: Ctr<TContainer & This>, obj: TObj) => T,
+        _this: This
+    ): () => Promise<T>;
 }
 
 export type ContainerScopeMetadata = {
@@ -20,31 +40,63 @@ export type AnyContainerScope = ContainerScope | ContainerScopeAsync;
 export interface IsAsyncScopeOfFunc<TContainer> {
     // async container
     <TScope extends AnyContainerScope, T>(
-        getScope: (ctr: TContainer) => TScope | Promise<TScope>,
-        factory: (ctx: TContainer) => T | Promise<T>
+        getScope: (ctr: Ctr<TContainer>) => TScope | Promise<TScope>,
+        factory: (ctx: Ctr<TContainer>) => T | Promise<T>
     ): () => Promise<T>;
+
+    <TScope extends AnyContainerScope, T, This>(
+        getScope: (ctr: Ctr<TContainer & This>) => TScope | Promise<TScope>,
+        factory: (ctx: Ctr<TContainer & This>) => T | Promise<T>,
+        _this: This
+    ): () => Promise<T>;
+
     <TScope extends AnyContainerScope, TArg, TValue>(
-        getScope: (ctr: TContainer) => TScope | Promise<TScope>,
-        factory: (ctx: TContainer, arg: TArg) => TValue | Promise<TValue>
+        getScope: (ctr: Ctr<TContainer>) => TScope | Promise<TScope>,
+        factory: (ctx: Ctr<TContainer>, arg: TArg) => TValue | Promise<TValue>
+    ): (arg: TArg) => Promise<TValue>;
+
+    <TScope extends AnyContainerScope, TArg, TValue, This>(
+        getScope: (ctr: Ctr<TContainer & This>) => TScope | Promise<TScope>,
+        factory: (ctx: Ctr<TContainer & This>, arg: TArg) => TValue | Promise<TValue>,
+        _this: This
     ): (arg: TArg) => Promise<TValue>;
 
 
     // async getScope
-    <TScope extends AnyContainerScope, T>(getScope: (ctr: TContainer) => Promise<TScope>,
-                                       factory: (ctx: TContainer) => T | Promise<T>
+    <TScope extends AnyContainerScope, T>(getScope: (ctr: Ctr<TContainer>) => Promise<TScope>,
+                                          factory: (ctx: Ctr<TContainer>) => T | Promise<T>
     ): () => Promise<T>;
-    <TScope extends AnyContainerScope, TArg, TValue>(getScope: (ctr: TContainer) => Promise<TScope>,
-                                                  factory: (ctx: TContainer, arg: TArg) => TValue | Promise<TValue>
+
+    <TScope extends AnyContainerScope, T, This>(getScope: (ctr: Ctr<TContainer & This>) => Promise<TScope>,
+                                                factory: (ctx: Ctr<TContainer & This>) => T | Promise<T>,
+                                                _this: This
+    ): () => Promise<T>;
+
+    <TScope extends AnyContainerScope, TArg, TValue, This>(getScope: (ctr: Ctr<TContainer & This>) => Promise<TScope>,
+                                                           factory: (ctx: Ctr<TContainer & This>, arg: TArg) => TValue | Promise<TValue>,
+                                                           _this: This
     ): (arg: TArg) => Promise<TValue>;
 }
 
 
 export interface IsScopeOfFunc<TContainer> {
-    <TScope extends ContainerScope, T>(getScope: (ctr: TContainer) => TScope,
-                                       factory: (ctx: TContainer) => T
+    <TScope extends ContainerScope, T>(getScope: (ctr: Ctr<TContainer>) => TScope,
+                                       factory: (ctx: Ctr<TContainer>) => T
     ): () => T;
-    <TScope extends ContainerScope, TArg, TValue>(getScope: (ctr: TContainer) => TScope,
-                                       factory: (ctx: TContainer, arg: TArg) => TValue
+
+    <TScope extends ContainerScope, TArg, TValue>(getScope: (ctr: Ctr<TContainer>) => TScope,
+                                                  factory: (ctx: Ctr<TContainer>, arg: TArg) => TValue
+    ): (arg: TArg) => TValue;
+
+    <TScope extends ContainerScope, T, This>(getScope: (ctr: Ctr<TContainer & This>) => TScope,
+                                             factory: (ctr: Ctr<TContainer & This>) => T,
+                                             _this: This
+    ): () => T;
+
+    <TScope extends ContainerScope, TArg, TValue, This>(
+        getScope: (ctr: Ctr<TContainer & This>) => TScope,
+        factory: (ctr: Ctr<TContainer & This>, arg: TArg) => TValue,
+        _this: This
     ): (arg: TArg) => TValue;
 }
 
@@ -52,13 +104,13 @@ export interface ModuleRegistrar<TContainer> {
     /** Register object as singleton. It will be created on first call and reused for all other calls */
     singleton: ObjectRegistrationFunc<TContainer>;
     /** Register object as singleton. It will be created on first call and reused for all other calls */
-    singletonAsync: <TObj, T>(waitFor: ((ctr: TContainer) => Promise<TObj>), factory: (ctr: TContainer, obj: TObj) => T) => () => Promise<T>;
+    singletonAsync: ObjectRegistrationFuncAsync<TContainer>;
     // TODO: add singletonArg. Manage caching with different args, but avoid memory leaks
 
     /** Register object as transient. It will be created on every call */
     transient: ObjectRegistrationFunc<TContainer>;
     /** Register object as transient. It will be created on every call */
-    transientAsync: <TValue, TObj>(waitFor: (ctr: TContainer) => Promise<TValue>, factory: (ctr: TContainer, value: TValue) => TObj) => () => Promise<TObj>;
+    transientAsync: ObjectRegistrationFuncAsync<TContainer>;
 
     /** Register object in custom scope. It recreating behavior will be controller by this scope */
     inScopeOf: IsScopeOfFunc<TContainer>;
@@ -90,6 +142,10 @@ export type Moniker = string | symbol;
 
 export const registrarKey = Symbol.for('registrar');
 
+interface InternalRegFn {
+    (ctr: any, thisOrArg?: any, _this?: any): any;
+}
+
 export class ContainerBuilder<TContainerData extends {}> {
     private readonly container: any = {};
     private readonly collisionStrategy: CollisionStrategy;
@@ -103,16 +159,16 @@ export class ContainerBuilder<TContainerData extends {}> {
         this.decorateModule = config.decorateModule as any;
         this.registrar = this.createRegistrar(container, config);
     }
-    
+
     /** register module as class */
     module<TModule extends BaseModule<TRequired>, TRequired = TContainerData>
-        (ctor: { new(register: ModuleRegistrar<TRequired>): TModule } )
+    (ctor: { new(register: ModuleRegistrar<TRequired>): TModule })
         : ContainerBuilder<TContainerData & Omit<TModule, 'register'>>;
 
     /** register module as class with monikers*/
     module<TModule extends BaseModule<TRequired>, TMoniker extends Moniker, TRequired = TContainerData>
-        (ctor: { new(register: ModuleRegistrar<TRequired>): TModule },  monikers: TMoniker[])
-        : ContainerBuilder<TContainerData & Omit<TModule, 'register'> & { [key in TMoniker]: Omit<TModule, 'register'>}>;
+    (ctor: { new(register: ModuleRegistrar<TRequired>): TModule }, monikers: TMoniker[])
+        : ContainerBuilder<TContainerData & Omit<TModule, 'register'> & { [key in TMoniker]: Omit<TModule, 'register'> }>;
 
     module(ctor: any, monikers?: string[]) {
         return this.register<any, any>(r => new ctor(r), monikers);
@@ -120,13 +176,13 @@ export class ContainerBuilder<TContainerData extends {}> {
 
     /** register module */
     register<TModule, TRequired = TContainerData>
-        (register: RegisterModuleFunc<TRequired & TContainerData, TModule>)
+    (register: RegisterModuleFunc<TRequired & TContainerData, TModule>)
         : ContainerBuilder<TContainerData & TModule>
 
     /** register module with monikers*/
     register<TModule, TMoniker extends Moniker, TRequired = TContainerData>
-        (register: RegisterModuleFunc<TRequired & TContainerData, TModule>, monikers: TMoniker[])
-        : ContainerBuilder<TContainerData & TModule & { [key in TMoniker]: TModule}>
+    (register: RegisterModuleFunc<TRequired & TContainerData, TModule>, monikers: TMoniker[])
+        : ContainerBuilder<TContainerData & TModule & { [key in TMoniker]: TModule }>
 
     register(register: any, monikers?: Moniker[]): any {
         let moduleObj = register(this.registrar);
@@ -136,8 +192,8 @@ export class ContainerBuilder<TContainerData extends {}> {
 
             // skipping service property
             if (value == this.registrar) continue;
-            if (this.collisionStrategy == 'throw' && this.container.hasOwnProperty(key))  {
-                throw new Error(`Name collision: service '${key}'.`);
+            if (this.collisionStrategy == 'throw' && this.container.hasOwnProperty(key)) {
+                throw new Error(`Name collision: service '${ key }'.`);
             }
             this.container[key] = value;
         }
@@ -180,10 +236,11 @@ export class ContainerBuilder<TContainerData extends {}> {
         return () => waitFor(ctr).then(obj => factory(ctr, obj));
     };
 
-    private createSingleton = (ctr: any) => (factory: (ctr: any, arg?: any) => any) => {
+    private createSingleton = (ctr: any) => (factory: InternalRegFn) => {
         return (function (factory) {
             let instance;
-            return (arg?) => {
+            return (argOrThis?) => {
+                let arg = argOrThis == ctr ? undefined : argOrThis;
                 if (instance == undefined) instance = factory(ctr, arg);
                 return instance;
             };
@@ -205,41 +262,44 @@ export class ContainerBuilder<TContainerData extends {}> {
 
     private createInScopeOf = (ctr: any, isAsync: boolean) => {
         return (getScope: (ctr: any) => any, factory: (ctr: any, arg?: any) => any) => {
-        // TODO: improve caching with arguments
-        return (function(getScope, factory, tags) {
-            let instance;
-            return (arg?) => {
-                const valuePromise = (async function (ctr, getScope, factory) {
+            // TODO: improve caching with arguments
+            return (function (getScope, factory, tags) {
+                let instance;
+                return (argOrThis?) => {
+                    let arg = argOrThis == ctr ? undefined : argOrThis;
+                    const valuePromise = (async function (ctr, getScope, factory) {
 
-                    if (instance !== undefined) {
-                        let scope: AnyContainerScope = getScope(ctr);
-                        if (scope instanceof Promise) {
-                            isAsync = true;
-                            scope = await scope;
-                        }
-                        let shouldCreateNew = scope.shouldCreateNew({arg});
-                        if (shouldCreateNew instanceof Promise) {
-                            isAsync = true;
-                            shouldCreateNew = await shouldCreateNew;
+                        if (instance !== undefined) {
+                            let scope: AnyContainerScope = getScope(ctr);
+                            if (scope instanceof Promise) {
+                                isAsync = true;
+                                scope = await scope;
+                            }
+                            let shouldCreateNew = scope.shouldCreateNew({ arg });
+                            if (shouldCreateNew instanceof Promise) {
+                                isAsync = true;
+                                shouldCreateNew = await shouldCreateNew;
+                            }
+
+                            if (!shouldCreateNew) {
+                                return instance;
+                            }
                         }
 
-                        if (!shouldCreateNew) {
-                            return instance;
-                        }
-                    }
-
-                    instance = factory(ctr, arg);
-                    if (instance instanceof Promise) isAsync = true;
-                    return instance;
-                })(ctr, getScope, factory);
-                return isAsync ? valuePromise : instance
-            }
-        })(getScope, factory);
-    } };
+                        instance = factory(ctr, arg);
+                        if (instance instanceof Promise) isAsync = true;
+                        return instance;
+                    })(ctr, getScope, factory);
+                    return isAsync ? valuePromise : instance
+                }
+            })(getScope, factory);
+        }
+    };
 
     private createTransient = (ctr: any) => {
-        return factory => function (a?) {
-            return factory(ctr, a)
+        return factory => function (argOrThis?) {
+            let arg = argOrThis == ctr ? undefined : argOrThis;
+            return factory(ctr, arg)
         };
     };
 
@@ -249,11 +309,12 @@ export class ContainerBuilder<TContainerData extends {}> {
 }
 
 export interface Module<TContext = {}> {
-    register: ModuleRegistrar<TContext & this>;
+    register: ModuleRegistrar<TContext>;
 }
 
-export abstract class BaseModule<TContext = {}> implements Module<TContext>{
-    public register: ModuleRegistrar<TContext & this>;
+export abstract class BaseModule<TContext = {}> implements Module<TContext> {
+    public register: ModuleRegistrar<TContext>;
+
     constructor(register: ModuleRegistrar<TContext>) {
         this.register = register as any;
     }

@@ -23,7 +23,7 @@ describe('ContainerBuilder', () => {
     it('should override dependencies on name collision', () => {
         class Module extends BaseModule {
             a = this.register.const(1);
-            b = this.register.transient(c => c.a + '!');
+            b = this.register.transient(c => c.a + '!', this);
         }
 
         const container = new ContainerBuilder({ onNameCollision: 'override' })

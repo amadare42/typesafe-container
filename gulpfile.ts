@@ -8,7 +8,11 @@ import * as rename from 'gulp-rename';
 
 import * as fs from 'fs';
 
-let tsProject = (declaration: boolean = false) => ts.createProject('tsconfig.json', { typescript, declaration })();
+let tsProject = (declaration: boolean = false) => ts.createProject('tsconfig.json', {
+    typescript,
+    declaration,
+    emitDeclarationOnly: declaration
+})();
 
 gulp.task('build-types', () => gulp.src('./src/index.ts')
     .pipe(tsProject(true))
@@ -42,4 +46,4 @@ gulp.task('build-docs', () => gulp.src('./docs/readme-template.ejs.md')
     .pipe(gulp.dest('./'))
 );
 
-gulp.task('build', gulp.series('build-app', 'gzip-app', 'build-types', 'build-docs'));
+gulp.task('build', gulp.series('build-app', 'gzip-app', 'build-docs', 'build-types'));
