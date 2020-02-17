@@ -8,7 +8,7 @@
 
 What is it?
 -----------
- `typesafe-container`  is small (<%- sizes.min() %>kb min, <%- sizes.gzip() %>kb min+gzip) library for managing object creation with lifetime management for TypeScript. It relays on TypeScript's implicit type inferring in order to provide full edit-time resolution of dependency graph.
+ `typesafe-container` is small (<%- sizes.min() %>kb min, <%- sizes.gzip() %>kb min+gzip) library for managing object creation with lifetime management for TypeScript. It relays on TypeScript's implicit type inferring in order to provide full edit-time resolution of dependency graph.
 
 Features
 --------
@@ -23,7 +23,7 @@ Comparison with "proper" DI-containers
 I tried to create simplest possible way to create and manage object with complex dependencies with taking full advantage of typing system. Let's compare it with existing DI-containers for typescript like [Inversify](https://github.com/inversify/InversifyJS) or [tsyringe](https://github.com/microsoft/tsyringe). Here is example of common way of using Inversify approach:
 ```typescript
 const TYPES = {
-    Weapon: Symbol.for('Weapon');
+    Weapon: Symbol.for('Weapon')
 };
 
 @injectable()

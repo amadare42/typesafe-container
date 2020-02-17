@@ -1,23 +1,24 @@
+type Ctr<TContainer> = Omit<TContainer, 'register'>;
+
 export interface ObjectRegistrationFunc<TContainer> {
     <T>(factory: (ctx: TContainer) => T): () => T;
 
     <T, TArg>(factory: (ctx: TContainer, arg: TArg) => T): (arg: TArg) => T;
 
-    // TODO: remove 'register' field
-    <T, This>(factory: (ctx: This & TContainer) => T, _this: This): () => T;
+    <T, This>(factory: (ctx: Ctr<TContainer & This>) => T, _this: This): () => T;
 
-    <T, TArg, This>(factory: (ctx: This & TContainer, arg: TArg, _this: This) => T): (arg: TArg) => T;
+    <T, TArg, This>(factory: (ctx: Ctr<TContainer & This>, arg: TArg, _this: This) => T): (arg: TArg) => T;
 }
 
 export interface ObjectRegistrationFuncAsync<TContainer> {
     <TObj, T, This>(
-        waitFor: ((ctr: TContainer) => Promise<TObj>),
-        factory: (ctr: TContainer, obj: TObj) => T
+        waitFor: ((ctr: Ctr<TContainer>) => Promise<TObj>),
+        factory: (ctr: Ctr<TContainer>, obj: TObj) => T
     ): () => Promise<T>;
 
     <TObj, T, This>(
-        waitFor: ((ctr: This & TContainer) => Promise<TObj>),
-        factory: (ctr: This & TContainer, obj: TObj) => T,
+        waitFor: ((ctr: Ctr<TContainer & This>) => Promise<TObj>),
+        factory: (ctr: Ctr<TContainer & This>, obj: TObj) => T,
         _this: This
     ): () => Promise<T>;
 }
@@ -39,62 +40,62 @@ export type AnyContainerScope = ContainerScope | ContainerScopeAsync;
 export interface IsAsyncScopeOfFunc<TContainer> {
     // async container
     <TScope extends AnyContainerScope, T>(
-        getScope: (ctr: TContainer) => TScope | Promise<TScope>,
-        factory: (ctx: TContainer) => T | Promise<T>
+        getScope: (ctr: Ctr<TContainer>) => TScope | Promise<TScope>,
+        factory: (ctx: Ctr<TContainer>) => T | Promise<T>
     ): () => Promise<T>;
 
     <TScope extends AnyContainerScope, T, This>(
-        getScope: (ctr: This & TContainer) => TScope | Promise<TScope>,
-        factory: (ctx: This & TContainer) => T | Promise<T>,
+        getScope: (ctr: Ctr<TContainer & This>) => TScope | Promise<TScope>,
+        factory: (ctx: Ctr<TContainer & This>) => T | Promise<T>,
         _this: This
     ): () => Promise<T>;
 
     <TScope extends AnyContainerScope, TArg, TValue>(
-        getScope: (ctr: TContainer) => TScope | Promise<TScope>,
-        factory: (ctx: TContainer, arg: TArg) => TValue | Promise<TValue>
+        getScope: (ctr: Ctr<TContainer>) => TScope | Promise<TScope>,
+        factory: (ctx: Ctr<TContainer>, arg: TArg) => TValue | Promise<TValue>
     ): (arg: TArg) => Promise<TValue>;
 
     <TScope extends AnyContainerScope, TArg, TValue, This>(
-        getScope: (ctr: This & TContainer) => TScope | Promise<TScope>,
-        factory: (ctx: This & TContainer, arg: TArg) => TValue | Promise<TValue>,
+        getScope: (ctr: Ctr<TContainer & This>) => TScope | Promise<TScope>,
+        factory: (ctx: Ctr<TContainer & This>, arg: TArg) => TValue | Promise<TValue>,
         _this: This
     ): (arg: TArg) => Promise<TValue>;
 
 
     // async getScope
-    <TScope extends AnyContainerScope, T>(getScope: (ctr: TContainer) => Promise<TScope>,
-                                          factory: (ctx: TContainer) => T | Promise<T>
+    <TScope extends AnyContainerScope, T>(getScope: (ctr: Ctr<TContainer>) => Promise<TScope>,
+                                          factory: (ctx: Ctr<TContainer>) => T | Promise<T>
     ): () => Promise<T>;
 
-    <TScope extends AnyContainerScope, T, This>(getScope: (ctr: This & TContainer) => Promise<TScope>,
-                                                factory: (ctx: This & TContainer) => T | Promise<T>,
+    <TScope extends AnyContainerScope, T, This>(getScope: (ctr: Ctr<TContainer & This>) => Promise<TScope>,
+                                                factory: (ctx: Ctr<TContainer & This>) => T | Promise<T>,
                                                 _this: This
     ): () => Promise<T>;
 
-    <TScope extends AnyContainerScope, TArg, TValue, This>(getScope: (ctr: This & TContainer) => Promise<TScope>,
-                                                           factory: (ctx: This & TContainer, arg: TArg) => TValue | Promise<TValue>,
+    <TScope extends AnyContainerScope, TArg, TValue, This>(getScope: (ctr: Ctr<TContainer & This>) => Promise<TScope>,
+                                                           factory: (ctx: Ctr<TContainer & This>, arg: TArg) => TValue | Promise<TValue>,
                                                            _this: This
     ): (arg: TArg) => Promise<TValue>;
 }
 
 
 export interface IsScopeOfFunc<TContainer> {
-    <TScope extends ContainerScope, T>(getScope: (ctr: TContainer) => TScope,
-                                       factory: (ctx: TContainer) => T
+    <TScope extends ContainerScope, T>(getScope: (ctr: Ctr<TContainer>) => TScope,
+                                       factory: (ctx: Ctr<TContainer>) => T
     ): () => T;
 
-    <TScope extends ContainerScope, TArg, TValue>(getScope: (ctr: TContainer) => TScope,
-                                                  factory: (ctx: TContainer, arg: TArg) => TValue
+    <TScope extends ContainerScope, TArg, TValue>(getScope: (ctr: Ctr<TContainer>) => TScope,
+                                                  factory: (ctx: Ctr<TContainer>, arg: TArg) => TValue
     ): (arg: TArg) => TValue;
 
-    <TScope extends ContainerScope, T, This>(getScope: (ctr: This) => TScope,
-                                             factory: (ctr: This) => T,
+    <TScope extends ContainerScope, T, This>(getScope: (ctr: Ctr<TContainer & This>) => TScope,
+                                             factory: (ctr: Ctr<TContainer & This>) => T,
                                              _this: This
     ): () => T;
 
     <TScope extends ContainerScope, TArg, TValue, This>(
-        getScope: (ctr: This) => TScope,
-        factory: (ctr: This, arg: TArg) => TValue,
+        getScope: (ctr: Ctr<TContainer & This>) => TScope,
+        factory: (ctr: Ctr<TContainer & This>, arg: TArg) => TValue,
         _this: This
     ): (arg: TArg) => TValue;
 }
@@ -141,6 +142,10 @@ export type Moniker = string | symbol;
 
 export const registrarKey = Symbol.for('registrar');
 
+interface InternalRegFn {
+    (ctr: any, thisOrArg?: any, _this?: any): any;
+}
+
 export class ContainerBuilder<TContainerData extends {}> {
     private readonly container: any = {};
     private readonly collisionStrategy: CollisionStrategy;
@@ -152,7 +157,6 @@ export class ContainerBuilder<TContainerData extends {}> {
         this.container = container;
         this.collisionStrategy = config.onNameCollision || 'throw';
         this.decorateModule = config.decorateModule as any;
-        // TODO: fix registrar implementation
         this.registrar = this.createRegistrar(container, config);
     }
 
@@ -232,10 +236,11 @@ export class ContainerBuilder<TContainerData extends {}> {
         return () => waitFor(ctr).then(obj => factory(ctr, obj));
     };
 
-    private createSingleton = (ctr: any) => (factory: (ctr: any, arg?: any) => any) => {
+    private createSingleton = (ctr: any) => (factory: InternalRegFn) => {
         return (function (factory) {
             let instance;
-            return (arg?) => {
+            return (argOrThis?) => {
+                let arg = argOrThis == ctr ? undefined : argOrThis;
                 if (instance == undefined) instance = factory(ctr, arg);
                 return instance;
             };
@@ -260,7 +265,8 @@ export class ContainerBuilder<TContainerData extends {}> {
             // TODO: improve caching with arguments
             return (function (getScope, factory, tags) {
                 let instance;
-                return (arg?) => {
+                return (argOrThis?) => {
+                    let arg = argOrThis == ctr ? undefined : argOrThis;
                     const valuePromise = (async function (ctr, getScope, factory) {
 
                         if (instance !== undefined) {
@@ -291,8 +297,9 @@ export class ContainerBuilder<TContainerData extends {}> {
     };
 
     private createTransient = (ctr: any) => {
-        return factory => function (a?) {
-            return factory(ctr, a)
+        return factory => function (argOrThis?) {
+            let arg = argOrThis == ctr ? undefined : argOrThis;
+            return factory(ctr, arg)
         };
     };
 

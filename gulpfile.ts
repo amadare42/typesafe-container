@@ -8,7 +8,11 @@ import * as rename from 'gulp-rename';
 
 import * as fs from 'fs';
 
-let tsProject = (declaration: boolean = false) => ts.createProject('tsconfig.json', { typescript, declaration })();
+let tsProject = (declaration: boolean = false) => ts.createProject('tsconfig.json', {
+    typescript,
+    declaration,
+    emitDeclarationOnly: declaration
+})();
 
 gulp.task('build-types', () => gulp.src('./src/index.ts')
     .pipe(tsProject(true))
