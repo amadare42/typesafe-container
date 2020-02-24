@@ -141,6 +141,7 @@ interface ContainerBuilderConfig<TContainerData = {}, TModuleRegistrar extends M
 export type Moniker = string | symbol;
 
 export const registrarKey = Symbol.for('registrar');
+export const skipKey = Symbol.for('skip');
 
 interface InternalRegFn {
     (ctr: any, thisOrArg?: any, _this?: any): any;
@@ -186,8 +187,11 @@ export class ContainerBuilder<TContainerData extends {}> {
 
     register(register: any, monikers?: Moniker[]): any {
         let moduleObj = register(this.registrar);
+        let skipKeys: string[] = moduleObj[skipKey];
         for (const key in moduleObj) {
             if (!moduleObj.hasOwnProperty(key)) continue;
+            if (skipKeys && skipKeys.indexOf(key) >= 0) continue;
+
             const value = moduleObj[key];
 
             // skipping service property
@@ -312,10 +316,14 @@ export interface Module<TContext = {}> {
     register: ModuleRegistrar<TContext>;
 }
 
-export abstract class BaseModule<TContext = {}> implements Module<TContext> {
-    public register: ModuleRegistrar<TContext>;
+export abstract class StatefulModule<TState, TContext = {}> implements Module<TContext> {
+    [skipKey] = ['state'];
 
-    constructor(register: ModuleRegistrar<TContext>) {
+    constructor(public register: ModuleRegistrar<TContext>, protected state: TState) {
         this.register = register as any;
     }
+}
+
+export abstract class BaseModule<TContext = {}> implements Module<TContext> {
+    constructor(public register: ModuleRegistrar<TContext>) {}
 }

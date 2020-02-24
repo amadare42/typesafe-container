@@ -1,4 +1,4 @@
-import { BaseModule, ContainerBuilder } from '../src';
+import { BaseModule, ContainerBuilder, StatefulModule } from '../src';
 
 describe('ContainerBuilder', () => {
     it('should build basic functioning container', () => {
@@ -115,5 +115,53 @@ describe('module monikers', () => {
             .getContainer();
 
         expect(container.b()).toBe('ab');
+    })
+});
+
+describe('stateful module', () => {
+    interface MyState {
+        foo: string,
+        bar: number
+    }
+
+    class MyStatefulModule extends StatefulModule<MyState> {
+        a = this.register.singleton(() => this.state.foo + this.state.bar);
+    }
+
+    it('should resolve state with "this"', () => {
+        let state = {
+            foo: 'foo',
+            bar: 42
+        };
+
+        let container = new ContainerBuilder()
+            .register(r => new MyStatefulModule(r, state))
+            .getContainer();
+
+        expect(container.a()).toBe('foo42');
+    });
+
+    it('should not collide with other stateful modules', () => {
+        class MyOtherStatefulModule extends StatefulModule<MyState> {
+            b = this.register.singleton(() => this.state.foo + this.state.bar);
+        }
+        let state1 = {
+            foo: 'foo',
+            bar: 42
+        };
+        let state2 = {
+            foo: 'bar',
+            bar: 43
+        };
+
+        let container = new ContainerBuilder()
+            .register(r => new MyStatefulModule(r, state1))
+            .register(r => new MyOtherStatefulModule(r, state2))
+            .getContainer();
+
+        console.log(Object.keys(container.a));
+
+        expect(container.a()).toBe('foo42');
+        expect(container.b()).toBe('bar43');
     })
 });

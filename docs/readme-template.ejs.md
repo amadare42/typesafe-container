@@ -4,7 +4,7 @@
 
 -----------
 
-[npm](https://www.npmjs.com/package/typesafe-container)
+[npm](https://www.npmjs.com/package/typesafe-container) | [github](https://github.com/amadare42/typesafe-container)
 
 What is it?
 -----------
@@ -108,6 +108,14 @@ If we need to dynamically control lifetime of object, we can use custom scopes:
 
 * You can set custom objects lifetime based on `ContainerScope` interface
 * `ContainerScope` controls only cache, not object creation. So object will be created on first call regardless of it's value
+
+### 06. Stateful module
+
+If for some reason module needs to have some state on initialization, we can use stateful module like so:
+
+```typescript
+<%- example("06") %>
+```
 
 Hints / Advanced topics
 -----------------------
@@ -216,6 +224,14 @@ new ContainerBuilder({ decorateRegistrar: addLogging })
     //...
 ```
 By using this simple trick, you will get log entries on every module registration and every module registration and every dependency resolving.
+
+### `skip` key
+
+If you need to have some properties that shouldn't be added to container, you could use `skipKey` property.
+It expected to be array of property names that should be skipped during module registration. Implementation of stateful
+module ([Stateful module](#06-stateful-module)) relays internally on it.
+This can be useful when you need to have private properties. Since in runtime it's impossible to discern between private
+and public fields, you have to specify all private properties that shouldn't be registered.
 
 Contributing
 ------------
